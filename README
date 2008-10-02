@@ -1,0 +1,8 @@
+This library lets you download files through the FTP protocol.
+
+To install it, just copy the "ftp-client.pack" directory in your main Anarki 
+directory. Now you can use it by typing:
+
+> (require "pack.arc")
+> (require 'ftp-client)
+
