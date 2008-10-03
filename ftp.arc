@@ -66,7 +66,7 @@
               `(= ,name (ftp-mk-cmd ,(string _)))]
             cmds)))
 
-; acess control
+; access control
 (ftp-defcmds user pass cwd cdup quit)
 
 ; transfer parameters
@@ -149,10 +149,18 @@
                   (while (no res))
                   res))))))))
 
+(def check-4/5 (resp)
+  "check for error messages in response and raise and error if one is found"
+  (if (is ((car (last resp)) 0) #\5)
+        (err:string "ftp: fatal error: " (cdr (last resp)))
+      (is ((car (last resp)) 0) #\4)
+        (err:string "ftp: temporary error: " (cdr (last resp)))))
+
 (def ftp-get-file (file host (o port 21) (o user "anonymous") 
                                          (o pass "anonymous"))
   "get a file through the FTP protocol using anonymous as user"
-  (ftp-w/session i o host port 
-    (ftp-user i o user) 
-    (ftp-pass i o pass)
+  (ftp-w/session i o host port
+    (check-4/5 (ftp-user i o user))
+    (check-4/5 (ftp-pass i o pass))
+    (check-4/5 (ftp-type i o "I"))
     (ftp-pasv-retr i o file)))
